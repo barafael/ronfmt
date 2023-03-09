@@ -23,9 +23,8 @@ license = "MIT"
 repository = "https://github.com/Ristarg/ronfmt"
 edition = "2021"
 
-
 [dependencies]
-clap = "2.32.0"
+clap = { version = "4.1.8", features = ["derive"] }
 itertools = "0.7.8"
 pest = "2.0"
 pest_derive = "2.0"

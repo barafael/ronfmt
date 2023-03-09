@@ -1,13 +1,13 @@
-#![allow(clippy::redundant_closure)] // blame pest
-
 mod ast;
+
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use clap::clap_app;
 use pest::Parser;
 use pest_derive::*;
 
-static mut TAB_SIZE: usize = 4;
-static mut MAX_LINE_WIDTH: usize = 40;
+static TAB_SIZE: AtomicUsize = AtomicUsize::new(4);
+static MAX_LINE_WIDTH: AtomicUsize = AtomicUsize::new(40);
 
 #[derive(Parser)]
 #[grammar = "ron.pest"]
@@ -19,10 +19,12 @@ fn main() {
     let target_path = matches.value_of("INPUT").unwrap();
 
     if let Some(mlw) = matches.value_of("MAX_LINE_WIDTH") {
-        unsafe { MAX_LINE_WIDTH = str::parse(mlw).unwrap() }
+        let mlw: usize = str::parse(mlw).unwrap();
+        MAX_LINE_WIDTH.store(mlw, Ordering::SeqCst);
     }
     if let Some(ts) = matches.value_of("TAB_SIZE") {
-        unsafe { TAB_SIZE = str::parse(ts).unwrap() }
+        let ts: usize = str::parse(ts).unwrap();
+        TAB_SIZE.store(ts, Ordering::SeqCst);
     }
 
     let file = std::fs::read_to_string(target_path).expect("unable to read file");
@@ -52,5 +54,6 @@ fn matches<'a>() -> clap::ArgMatches<'a> {
         (@arg MAX_LINE_WIDTH: -w +takes_value "Sets soft max line width for formatting heuristics")
         (@arg TAB_SIZE: -t +takes_value "Sets indentation size in spaces")
         (@arg debug: -d "Prints output to console instead of overwriting the input file")
-    ).get_matches()
+    )
+    .get_matches()
 }

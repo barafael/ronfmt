@@ -1,19 +1,19 @@
-mod ast;
-
 use std::{
     ffi::OsString,
     sync::atomic::{AtomicUsize, Ordering},
 };
 
-use arguments::Arguments;
 use clap::Parser as ClapParser;
 use pest::Parser;
-use pest_derive::*;
+use pest_derive::Parser;
+
+use arguments::Arguments;
 
 static TAB_SIZE: AtomicUsize = AtomicUsize::new(4);
 static MAX_LINE_WIDTH: AtomicUsize = AtomicUsize::new(40);
 
 mod arguments;
+mod ast;
 
 #[derive(Parser)]
 #[grammar = "ron.pest"]

@@ -1,6 +1,5 @@
-use std::path::PathBuf;
-
 use clap::{arg, command, Parser};
+use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[command(author, version, long_about = Some("Utility for autoformatting RON files."))]

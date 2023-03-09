@@ -1,4 +1,4 @@
-use super::*;
+use super::{Kind, RonFile, Value};
 use crate::{MAX_LINE_WIDTH, TAB_SIZE};
 use itertools::Itertools;
 use std::{
@@ -9,10 +9,10 @@ use std::{
 impl Display for RonFile {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         let RonFile(extensions, value) = self;
-        if !extensions.is_empty() {
-            writeln!(f, "#![enable({})]", extensions.iter().join(", "))
-        } else {
+        if extensions.is_empty() {
             write!(f, "{}", value.to_string_rec(0))
+        } else {
+            writeln!(f, "#![enable({})]", extensions.iter().join(", "))
         }
     }
 }
@@ -87,7 +87,7 @@ impl Value {
             Kind::Atom(atom) => atom.clone(),
 
             Kind::List(elements) => {
-                format!("[{}]", elements.iter().map(|e| e.single_line()).join(", "))
+                format!("[{}]", elements.iter().map(Self::single_line).join(", "))
             }
 
             Kind::Map(entries) => format!(
@@ -103,7 +103,7 @@ impl Value {
                 format!(
                     "{}({})",
                     ident,
-                    elements.iter().map(|e| e.single_line()).join(", ")
+                    elements.iter().map(Self::single_line).join(", ")
                 )
             }
 
@@ -113,7 +113,7 @@ impl Value {
                     .iter()
                     .map(|(k, v)| format!("{}: {}", k, v.single_line()))
                     .join(", ");
-                format!("{}({})", ident, fields)
+                format!("{ident}({fields})")
             }
         }
     }

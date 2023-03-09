@@ -1,5 +1,5 @@
-// implicit
 WHITESPACE = _{ " " | "\n" | "\t" | "\r" }
+
 COMMENT = _{ line_comment | block_comment }
 line_comment = { "//" ~ line_comment_inner ~ (NEWLINE | &EOI) }
 line_comment_inner = { (!NEWLINE ~ ANY)* }
@@ -9,11 +9,13 @@ block_comment_inner = { (!"*/" ~ ANY)* }
 ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
 
 ron_file = { SOI ~ extension* ~ value ~ EOI }
+
 extension = {
     "#" ~ "!" ~ "[" ~ "enable" ~ "(" ~
     ident ~ ("," ~ ident)* ~ ","? ~
     ")" ~ "]"
 }
+
 value = { float | signed_int | bool | char | string | list | map | tuple_type | fields_type | unit_type }
 
 // booleans
@@ -57,7 +59,6 @@ map = {
     "}"
 }
 map_entry = { value ~ ":" ~ value }
-
 
 unit_type = { ident }
 tuple_type = {

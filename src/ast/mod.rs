@@ -19,9 +19,7 @@ pub enum Kind {
 
 impl RonFile {
     pub fn parse_from(pair: Pair<Rule>) -> RonFile {
-        if pair.as_rule() != Rule::ron_file {
-            panic!("expected ron_file pair");
-        }
+        assert!(pair.as_rule() == Rule::ron_file, "expected ron_file pair");
 
         let mut iter = pair.into_inner();
         let extensions = iter
@@ -31,7 +29,7 @@ impl RonFile {
             .collect();
         let value = iter.next().map(Value::from).unwrap();
 
-        debug_assert!(iter.next().unwrap().as_rule() == Rule::EOI);
+        assert!(iter.next().unwrap().as_rule() == Rule::EOI);
 
         RonFile(extensions, Box::new(value))
     }
@@ -79,7 +77,7 @@ impl Value {
                 };
 
                 let values: Vec<_> = iter.map(Value::from).collect();
-                let len = ident.as_ref().map_or(0, |i| i.len())
+                let len = ident.as_ref().map_or(0, String::len)
                     + values.iter().map(|n| n.0 + 2).sum::<usize>(); // N elements -> N-1 ", " + "()" -> +2 chars per element
 
                 Value(len, Kind::TupleType(ident, values))
@@ -99,7 +97,7 @@ impl Value {
                         (k.as_str().to_string(), Value::from(v))
                     })
                     .collect();
-                let len = ident.as_ref().map_or(0, |i| i.len())
+                let len = ident.as_ref().map_or(0, String::len)
                     + fields.iter().map(|(k, v)| k.len() + v.0 + 4).sum::<usize>(); // N fields -> N ": " + N-1 ", " + "()" -> +4 chars per field
 
                 Value(len, Kind::FieldsType(ident, fields))

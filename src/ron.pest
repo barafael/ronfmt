@@ -1,0 +1,74 @@
+// implicit
+WHITESPACE = _{ " " | "\n" | "\t" | "\r" }
+COMMENT = _{ line_comment | block_comment }
+line_comment = { "//" ~ line_comment_inner ~ (NEWLINE | &EOI) }
+line_comment_inner = { (!NEWLINE ~ ANY)* }
+block_comment = { "/*" ~ (block_comment | block_comment_inner)  ~ "*/" }
+block_comment_inner = { (!"*/" ~ ANY)* }
+
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+
+ron_file = { SOI ~ extension* ~ value ~ EOI }
+extension = {
+    "#" ~ "!" ~ "[" ~ "enable" ~ "(" ~
+    ident ~ ("," ~ ident)* ~ ","? ~
+    ")" ~ "]"
+}
+value = { float | signed_int | bool | char | string | list | map | tuple_type | fields_type | unit_type }
+
+// booleans
+bool = { "true" | "false" }
+
+// numbers
+sign = { "+" | "-" }
+
+signed_int = @{ sign? ~ unsigned_int }
+unsigned_int = { with_base | ASCII_DIGIT+ }
+with_base = { "0" ~ ("x" | "b" | "o") ~ ASCII_HEX_DIGIT+ }
+
+float = @{ float_std | float_frac }
+float_std = { sign? ~ ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* ~ float_exp? }
+float_frac = { "." ~ ASCII_DIGIT+ ~ float_exp? }
+float_exp = { ("e" | "E") ~ ASCII_DIGIT+ }
+
+// chars
+char = ${ "'" ~ char_inner ~ "'" }
+char_inner = { "\\'" | (!"'" ~ ANY)* }
+
+// strings
+string = ${ string_std | string_raw }
+
+string_std = { "\"" ~ string_std_inner ~ "\"" }
+string_std_inner = { ("\\\"" | !"\"" ~ ANY)* }
+
+string_raw = { "r" ~ PUSH("#"*) ~ "\"" ~ string_raw_inner ~ "\"" ~ POP }
+string_raw_inner = { (!("\"" ~ PEEK) ~ ANY)* }
+
+// collections
+list = {
+    "[" ~
+    (value ~ ("," ~ value)* ~ ","?)? ~
+    "]"
+}
+
+map = {
+    "{" ~
+    (map_entry ~ ("," ~ map_entry)* ~ ","?)? ~
+    "}"
+}
+map_entry = { value ~ ":" ~ value }
+
+
+unit_type = { ident }
+tuple_type = {
+    ident? ~ "(" ~
+    (value ~ ("," ~ value)* ~ ","?)? ~
+    ")"
+}
+
+fields_type = {
+    ident? ~ "(" ~
+    (field ~ ("," ~ field)* ~ ","?)? ~
+    ")"
+}
+field = { ident ~ ":" ~ value }

@@ -8,7 +8,7 @@ use std::{
 
 impl Display for RonFile {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        let RonFile(extensions, value) = self;
+        let Self(extensions, value) = self;
         if extensions.is_empty() {
             write!(f, "{}", value.to_string_rec(0))
         } else {

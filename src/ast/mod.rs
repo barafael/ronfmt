@@ -18,7 +18,7 @@ pub enum Kind {
 }
 
 impl RonFile {
-    pub fn parse_from(pair: Pair<Rule>) -> RonFile {
+    pub fn parse_from(pair: Pair<Rule>) -> Self {
         assert!(pair.as_rule() == Rule::ron_file, "expected ron_file pair");
 
         let mut iter = pair.into_inner();
@@ -31,12 +31,12 @@ impl RonFile {
 
         assert!(iter.next().unwrap().as_rule() == Rule::EOI);
 
-        RonFile(extensions, Box::new(value))
+        Self(extensions, Box::new(value))
     }
 }
 
 impl Value {
-    fn from(pair: Pair<Rule>) -> Value {
+    fn from(pair: Pair<Rule>) -> Self {
         match pair.as_rule() {
             Rule::bool
             | Rule::char
@@ -45,14 +45,14 @@ impl Value {
             | Rule::float
             | Rule::unit_type => {
                 let a = pair.as_str().to_string();
-                Value(a.len(), Kind::Atom(a))
+                Self(a.len(), Kind::Atom(a))
             }
 
             Rule::list => {
-                let values: Vec<_> = pair.into_inner().map(Value::from).collect();
+                let values: Vec<_> = pair.into_inner().map(Self::from).collect();
                 let len = values.iter().map(|n| n.0 + 2).sum(); // N elements -> N-1 ", " + "[]" -> +2 chars per element
 
-                Value(len, Kind::List(values))
+                Self(len, Kind::List(values))
             }
 
             Rule::map => {
@@ -61,12 +61,12 @@ impl Value {
                     .map(|entry| {
                         let mut kv_iter = entry.into_inner();
                         let (k, v) = (kv_iter.next().unwrap(), kv_iter.next().unwrap());
-                        (Value::from(k), Value::from(v))
+                        (Self::from(k), Self::from(v))
                     })
                     .collect();
                 let len = entries.iter().map(|(k, v)| k.0 + v.0 + 4).sum(); // N entries -> N ": " + N-1 ", " + "{}" -> +4 chars per entry
 
-                Value(len, Kind::Map(entries))
+                Self(len, Kind::Map(entries))
             }
 
             Rule::tuple_type => {
@@ -76,11 +76,11 @@ impl Value {
                     _ => None,
                 };
 
-                let values: Vec<_> = iter.map(Value::from).collect();
+                let values: Vec<_> = iter.map(Self::from).collect();
                 let len = ident.as_ref().map_or(0, String::len)
                     + values.iter().map(|n| n.0 + 2).sum::<usize>(); // N elements -> N-1 ", " + "()" -> +2 chars per element
 
-                Value(len, Kind::TupleType(ident, values))
+                Self(len, Kind::TupleType(ident, values))
             }
 
             Rule::fields_type => {
@@ -94,16 +94,16 @@ impl Value {
                     .map(|field| {
                         let mut kv_iter = field.into_inner();
                         let (k, v) = (kv_iter.next().unwrap(), kv_iter.next().unwrap());
-                        (k.as_str().to_string(), Value::from(v))
+                        (k.as_str().to_string(), Self::from(v))
                     })
                     .collect();
                 let len = ident.as_ref().map_or(0, String::len)
                     + fields.iter().map(|(k, v)| k.len() + v.0 + 4).sum::<usize>(); // N fields -> N ": " + N-1 ", " + "()" -> +4 chars per field
 
-                Value(len, Kind::FieldsType(ident, fields))
+                Self(len, Kind::FieldsType(ident, fields))
             }
 
-            Rule::value => Value::from(pair.into_inner().next().unwrap()),
+            Rule::value => Self::from(pair.into_inner().next().unwrap()),
 
             // handled in other rules
             _ => unreachable!(),

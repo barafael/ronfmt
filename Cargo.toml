@@ -11,7 +11,6 @@
 # will likely look very different (and much more reasonable)
 
 [package]
-edition = "2018"
 name = "ronfmt"
 version = "0.1.0"
 authors = ["Anton Filippov <a.filippov@protonmail.com>"]
@@ -22,14 +21,11 @@ keywords = ["RON", "autoformatting", "beautify", "pretty-print"]
 categories = ["command-line-utilities", "development-tools", "value-formatting"]
 license = "MIT"
 repository = "https://github.com/Ristarg/ronfmt"
-[dependencies.clap]
-version = "2.32.0"
+edition = "2021"
 
-[dependencies.itertools]
-version = "0.7.8"
 
-[dependencies.pest]
-version = "2.0"
-
-[dependencies.pest_derive]
-version = "2.0"
+[dependencies]
+clap = "2.32.0"
+itertools = "0.7.8"
+pest = "2.0"
+pest_derive = "2.0"

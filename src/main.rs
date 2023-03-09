@@ -25,7 +25,7 @@ fn main() {
         unsafe { TAB_SIZE = str::parse(ts).unwrap() }
     }
 
-    let file = std::fs::read_to_string(&target_path).expect("unable to read file");
+    let file = std::fs::read_to_string(target_path).expect("unable to read file");
 
     let ron = RonParser::parse(Rule::ron_file, &file)
         .expect("unable to parse RON")
@@ -35,10 +35,10 @@ fn main() {
     if matches.is_present("debug") {
         println!("{}", ast::RonFile::parse_from(ron));
     } else {
-        std::fs::copy(&target_path, format!("{}.bak", &target_path))
+        std::fs::copy(target_path, format!("{}.bak", &target_path))
             .expect("unable to create backup file");
 
-        std::fs::write(&target_path, format!("{}", ast::RonFile::parse_from(ron)))
+        std::fs::write(target_path, format!("{}", ast::RonFile::parse_from(ron)))
             .expect("unable to overwrite target file");
     }
 }

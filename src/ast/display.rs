@@ -7,10 +7,10 @@ impl Display for RonFile {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         let RonFile(extensions, value) = self;
         if !extensions.is_empty() {
-            writeln!(f, "#![enable({})]", extensions.iter().join(", "));
+            writeln!(f, "#![enable({})]", extensions.iter().join(", "))
+        } else {
+            write!(f, "{}", value.to_string_rec(0))
         }
-
-        write!(f, "{}", value.to_string_rec(0))
     }
 }
 
@@ -70,7 +70,7 @@ impl Value {
                 let fields = fields
                     .iter()
                     .map(|(k, v)| {
-                        format!("{}: {},\n", space(tabs + 1) + &k, v.to_string_rec(tabs + 1))
+                        format!("{}: {},\n", space(tabs + 1) + k, v.to_string_rec(tabs + 1))
                     })
                     .collect::<String>();
 

@@ -8,7 +8,7 @@ readme = "README.md"
 keywords = ["RON", "autoformatting", "beautify", "pretty-print"]
 categories = ["command-line-utilities", "development-tools", "value-formatting"]
 license = "MIT"
-repository = "https://github.com/Ristarg/ronfmt"
+repository = "https://github.com/barafael/ronfmt"
 edition = "2021"
 
 [dependencies]

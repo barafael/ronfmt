@@ -1,6 +1,7 @@
 use super::{Kind, RonFile, Value};
 use crate::{MAX_LINE_WIDTH, TAB_SIZE};
 use itertools::Itertools;
+use std::fmt::Write;
 use std::{
     fmt::{self, Display, Formatter},
     sync::atomic::Ordering,
@@ -44,16 +45,16 @@ impl Value {
             }
 
             Kind::Map(entries) => {
-                let entries = entries
-                    .iter()
-                    .map(|(k, v)| {
-                        format!(
-                            "{}: {},\n",
-                            space(tabs + 1) + &k.to_string_rec(tabs + 1),
-                            v.to_string_rec(tabs + 1)
-                        )
-                    })
-                    .collect::<String>();
+                let entries = entries.iter().fold(String::new(), |mut s, (k, v)| {
+                    writeln!(
+                        s,
+                        "{}: {},",
+                        space(tabs + 1) + &k.to_string_rec(tabs + 1),
+                        v.to_string_rec(tabs + 1)
+                    )
+                    .expect("`write!`ing to a `String` never fails");
+                    s
+                });
 
                 format!("{{\n{}{}}}", entries, space(tabs))
             }
@@ -70,12 +71,11 @@ impl Value {
 
             Kind::FieldsType(ident, fields) => {
                 let ident = ident.clone().unwrap_or_default();
-                let fields = fields
-                    .iter()
-                    .map(|(k, v)| {
-                        format!("{}: {},\n", space(tabs + 1) + k, v.to_string_rec(tabs + 1))
-                    })
-                    .collect::<String>();
+                let fields = fields.iter().fold(String::new(), |mut s, (k, v)| {
+                    writeln!(s, "{}: {},", space(tabs + 1) + k, v.to_string_rec(tabs + 1))
+                        .expect("`write!`ing to a `String` never fails");
+                    s
+                });
 
                 format!("{}(\n{}{})", ident, fields, space(tabs))
             }

@@ -1,6 +1,6 @@
 [package]
 name = "ronfmt"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Anton Filippov <a.filippov@protonmail.com>"]
 description = "A simple tool for autoformatting RON files."
 homepage = "https://github.com/Ristarg/ronfmt"
@@ -9,7 +9,7 @@ keywords = ["RON", "autoformatting", "beautify", "pretty-print"]
 categories = ["command-line-utilities", "development-tools", "value-formatting"]
 license = "MIT"
 repository = "https://github.com/barafael/ronfmt"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.53", features = ["derive"] }

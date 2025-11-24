@@ -1,11 +1,11 @@
-use clap::{arg, command, Parser};
+use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
 #[command(author, version, long_about = Some("Utility for autoformatting RON files."))]
 pub struct Arguments {
     /// Sets which file to format
-    #[arg()]
+    #[arg(short, long)]
     pub input: PathBuf,
 
     /// Sets soft max line width for formatting heuristics
